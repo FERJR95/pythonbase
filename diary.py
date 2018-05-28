@@ -99,6 +99,131 @@ def search_fordate():
         #print(entres)
     except sqlite3.OperationalError as error:
         print("Error al Abrir", error)
+def search_entries():
+    """BUSCAR COINCIDENCIAS EN LOS REGISTROS"""
+
+    try:
+        bd=sqlite3.connect("diary.db")
+        cursor=bd.cursor()
+
+        sear=input("Escriba lo que desea buscar: ")
+        if not sear:
+            print("Busqueda Invalida")
+            exit()
+
+        sentence="SELECT * FROM entry WHERE content LIKE ?;"
+
+        cursor.execute(sentence, [ "%{}%".format(sear) ])
+
+        entres=cursor.fetchall()
+        print("+{:-<20}+{:-<10}+{:-<50}+".format("", "", ""))
+        print("|{:^20}|{:^10}|{:^50}|".format("ID", "Contenido", "Fecha"))
+        print("+{:-<20}+{:-<10}+{:-<50}+".format("", "", ""))
+
+        for id, content, timestamp in entres:
+            print("|{:^20}|{:^10}|{:^50}|".format(id , content, timestamp))
+
+        print("+{:-<20}+{:-<10}+{:-<50}+".format("", "", ""))
+
+        #print(entres)
+    except sqlite3.OperationalError as error:
+        print("Error al Abrir", error)
+
+def update_entries():
+    """ACTUALIZAR UN REGISTRO"""
+    try:
+        bd=sqlite3.connect("diary.db")
+        cursor=bd.cursor()
+
+        sentence="SELECT *,rowid FROM entry;"
+
+        cursor.execute(sentence)
+
+        entres=cursor.fetchall()
+        print("+{:-<20}+{:-<10}+{:-<50}+{:-<20}+".format("", "", "", ""))
+        print("|{:^20}|{:^10}|{:^50}|{:^20}|".format("ID", "Contenido", "Fecha", "Rowid"))
+        print("+{:-<20}+{:-<10}+{:-<50}+{:-<20}+".format("", "", "", ""))
+
+        for id, content, timestamp, rowid in entres:
+            print("|{:^20}|{:^10}|{:^50}|{:^20}|".format(id , content, timestamp, rowid))
+
+        print("+{:-<20}+{:-<10}+{:-<50}+{:-<20}+".format("", "", "", ""))
+
+        #PETICION
+        id_content= input("\nEsciba el Id del Registro que desea Modificar: ")
+        if not id_content:
+            print("No se escribió nada, intentelo de nuevo")
+            exit()
+
+        #Nuevos Datos
+        content = input("\n Nuevo Registro: ")
+        timestamp = DateTimeField(default=datetime.datetime.now)
+
+
+        #actualizacion
+        sentence = "UPDATE entry SET content = ?, timestamp=timestamp WHERE id = ?;"
+
+        cursor.execute(sentence, [content, id_content])
+        bd.commit()
+        print("Actualizado.!")
+
+    except sqlite3.OperationalError as error:
+        print("Error al Abrir:", error)
+
+
+def search_all():
+    """MOSTRAR TODOS LOS RESULTADOS"""
+    try:
+        bd=sqlite3.connect("diary.db")
+        cursor=bd.cursor()
+        sentence="SELECT * FROM entry;"
+
+        cursor.execute(sentence)
+
+        entres=cursor.fetchall()
+        print("+{:-<20}+{:-<10}+{:-<50}+".format("", "", ""))
+        print("|{:^20}|{:^10}|{:^50}|".format("ID", "Contenido", "Fecha"))
+        print("+{:-<20}+{:-<10}+{:-<50}+".format("", "", ""))
+
+        for id, content, timestamp in entres:
+            print("|{:^20}|{:^10}|{:^50}|".format(id , content, timestamp))
+
+        print("+{:-<20}+{:-<10}+{:-<50}+".format("", "", ""))
+
+        #print(entres)
+    except sqlite3.OperationalError as error:
+        print("Error al Abrir", error)
+
+def search_fordate():
+    """BUSCAR COINCIDENCIAS EN LOS REGISTROS POR FECHA"""
+
+    try:
+        bd=sqlite3.connect("diary.db")
+        cursor=bd.cursor()
+
+        sear=input("Escriba la fecha de lo que desea buscar: ")
+        if not sear:
+            print("Busqueda Invalida")
+            exit()
+
+        sentence="SELECT * FROM entry WHERE timestamp LIKE ?;"
+
+        cursor.execute(sentence, [ "%{}%".format(sear) ])
+
+        entres=cursor.fetchall()
+        print("+{:-<20}+{:-<10}+{:-<50}+".format("", "", ""))
+        print("|{:^20}|{:^10}|{:^50}|".format("ID", "Contenido", "Fecha"))
+        print("+{:-<20}+{:-<10}+{:-<50}+".format("", "", ""))
+
+        for id, content, timestamp in entres:
+            print("|{:^20}|{:^10}|{:^50}|".format(id , content, timestamp))
+
+        print("+{:-<20}+{:-<10}+{:-<50}+".format("", "", ""))
+
+        #print(entres)
+    except sqlite3.OperationalError as error:
+        print("Error al Abrir", error)
+        
 menu=OrderedDict([
     ('a',add_entry),
     ('v',view_entries),
